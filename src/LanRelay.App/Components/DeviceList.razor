@@ -1,0 +1,82 @@
+@implements IDisposable
+
+<div class="device-list-container">
+    <div class="device-list-header">
+        <h3>📡 发现的设备</h3>
+        <span class="device-count">@devices.Count 台设备</span>
+    </div>
+
+    @if (devices.Count == 0)
+    {
+        <div class="device-list-empty">
+            <div class="empty-icon">🔍</div>
+            <p>正在搜索局域网设备...</p>
+            <p class="hint">确保其他设备已启动 LanRelay</p>
+        </div>
+    }
+    else
+    {
+        <div class="device-list">
+            @foreach (var device in devices)
+            {
+                <div class="device-card @(SelectedDeviceId == device.DeviceId ? "selected" : "")"
+                     @onclick="() => SelectDevice(device)">
+                    <div class="device-icon">
+                        @(device.IsDirectConnection ? "💻" : "🔗")
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">@device.DeviceName</div>
+                        <div class="device-ip">@device.IPAddress</div>
+                        <div class="device-group">@device.GroupId</div>
+                    </div>
+                    <div class="device-status">
+                        @if (device.IsDirectConnection)
+                        {
+                            <span class="status-badge direct">直连</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge relay">中转</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Inject]
+    private DeviceListState DeviceListState { get; set; } = default!;
+
+    [Parameter]
+    public Guid? SelectedDeviceId { get; set; }
+
+    [Parameter]
+    public EventCallback<DeviceInfo> OnDeviceSelected { get; set; }
+
+    private IReadOnlyList<DeviceInfo> devices = [];
+
+    protected override void OnInitialized()
+    {
+        devices = DeviceListState.Devices;
+        DeviceListState.OnDevicesChanged += HandleDevicesChanged;
+    }
+
+    private void HandleDevicesChanged()
+    {
+        devices = DeviceListState.Devices;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SelectDevice(DeviceInfo device)
+    {
+        SelectedDeviceId = device.DeviceId;
+        await OnDeviceSelected.InvokeAsync(device);
+    }
+
+    public void Dispose()
+    {
+        DeviceListState.OnDevicesChanged -= HandleDevicesChanged;
+    }
+}

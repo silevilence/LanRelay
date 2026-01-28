@@ -28,7 +28,8 @@ You are an expert .NET Architect and Developer assisting in building a Local Are
 │   ├── plan/             # Backlog
 │   ├── inprocess/        # Active task (MAX 1)
 │   └── completed/        # Finished tasks
-└── LanRelay.slnx         # Solution file
+├── LanRelay.slnx         # Solution file
+└── demands.md            # 需求文档
 ```
 
 ## 3. CLI First Approach (Mandatory)

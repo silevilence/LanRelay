@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using LanRelay.Core.State;
 
 namespace LanRelay.App;
 
@@ -15,6 +16,9 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddMauiBlazorWebView();
+
+		// Register State Services (Singleton for State Container Pattern)
+		builder.Services.AddSingleton<DeviceListState>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();

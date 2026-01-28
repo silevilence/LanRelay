@@ -1,5 +1,36 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<div class="home-container">
+    <div class="sidebar">
+        <DeviceList SelectedDeviceId="@selectedDeviceId"
+                    OnDeviceSelected="HandleDeviceSelected" />
+    </div>
+    <div class="main-content">
+        @if (selectedDevice is not null)
+        {
+            <div class="device-detail">
+                <h2>@selectedDevice.DeviceName</h2>
+                <p>IP: @selectedDevice.IPAddress</p>
+                <p>组: @selectedDevice.GroupId</p>
+                <p>状态: @(selectedDevice.IsDirectConnection ? "直连" : "中转")</p>
+            </div>
+        }
+        else
+        {
+            <div class="no-selection">
+                <p>👈 请从左侧选择一个设备开始通信</p>
+            </div>
+        }
+    </div>
+</div>
 
-Welcome to your new app.
+@code {
+    private Guid? selectedDeviceId;
+    private DeviceInfo? selectedDevice;
+
+    private void HandleDeviceSelected(DeviceInfo device)
+    {
+        selectedDeviceId = device.DeviceId;
+        selectedDevice = device;
+    }
+}

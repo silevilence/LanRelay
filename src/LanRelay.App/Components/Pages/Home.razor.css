@@ -1,0 +1,43 @@
+.home-container {
+    display: flex;
+    height: 100vh;
+    background: #13131a;
+}
+
+.sidebar {
+    width: 320px;
+    min-width: 280px;
+    max-width: 400px;
+    border-right: 1px solid #2d2d3f;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.device-detail {
+    background: #1e1e2e;
+    padding: 24px;
+    border-radius: 12px;
+    min-width: 300px;
+}
+
+.device-detail h2 {
+    margin: 0 0 16px 0;
+    color: #e0e0e0;
+}
+
+.device-detail p {
+    margin: 8px 0;
+    color: #888;
+}
+
+.no-selection {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+}
