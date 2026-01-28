@@ -1,0 +1,195 @@
+# =============================================================================
+# .gitignore for LanRelay - .NET 10 MAUI Blazor Hybrid Solution
+# =============================================================================
+
+# =============================================================================
+# .NET / MSBuild
+# =============================================================================
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Build results
+[Aa]rtifacts/
+*.build.csn
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.nuget.cache
+
+# =============================================================================
+# Visual Studio
+# =============================================================================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build cache
+*.VisualState.xml
+TestStore[0-9]*/
+
+# Windows thumbnail caches
+[Tt]humbs.db
+[Dd]esktopThumbnail.jpg
+
+# Project-specific files
+launchSettings.json
+!**/Properties/launchSettings.json
+
+# Publish profiles (comment out if you want to track them)
+# *.pubxml
+# *.publishproj
+
+# =============================================================================
+# VS Code
+# =============================================================================
+# Ignore user-specific settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+
+# =============================================================================
+# JetBrains Rider
+# =============================================================================
+.idea/
+*.sln.iml
+
+# =============================================================================
+# MAUI / Xamarin Specific
+# =============================================================================
+# MAUI generated files
+*.mauiapp
+*.maui.runtimeconfig.json
+
+# Android
+**/Platforms/Android/**/Resource.designer.cs
+**/Platforms/Android/**/aapt2-generated/
+*.apk
+*.aab
+*.keystore
+!debug.keystore
+
+# iOS / macOS
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
+*.xcworkspace
+
+# Windows (MSIX)
+*.msix
+*.msixbundle
+*.msixupload
+*.appx
+*.appxbundle
+*.appxupload
+
+# =============================================================================
+# Test Results & Coverage
+# =============================================================================
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+coverage*.json
+coverage*.xml
+coverage*.info
+lcov.info
+*.opencover.xml
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
+# =============================================================================
+# OS Specific
+# =============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.Trash-*
+
+# =============================================================================
+# Miscellaneous
+# =============================================================================
+# Backup files
+*.bak
+*.tmp
+*.temp
+*.swp
+*~
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+appsettings.Local.json
+appsettings.Development.json
+
+# Secrets (never commit these!)
+secrets.json
+*.pfx
+*.p12
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# Fody
+FodyWeavers.xsd
+
+# StyleCop
+StyleCopReport.xml
+
+# DocFX
+_site/
+api/
+
+# =============================================================================
+# Task System - TRACKED (do not ignore .md files)
+# =============================================================================
+# Only ignore temp/lock files, not the task markdown files
+tasks/**/*.tmp
+tasks/**/*.lock
+tasks/**/*~
+
+# =============================================================================
+# End of .gitignore
+# =============================================================================

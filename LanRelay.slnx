@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LanRelay.App/LanRelay.App.csproj" />
+    <Project Path="src/LanRelay.Core/LanRelay.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LanRelay.App.Tests/LanRelay.App.Tests.csproj" />
+    <Project Path="tests/LanRelay.Core.Tests/LanRelay.Core.Tests.csproj" />
+  </Folder>
+</Solution>
