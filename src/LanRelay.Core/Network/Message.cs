@@ -1,4 +1,5 @@
 using System.Text;
+using LanRelay.Core.FileTransfer;
 
 namespace LanRelay.Core.Network;
 
@@ -71,6 +72,64 @@ public record Message
                 BodyLength = body.Length
             },
             Body = body
+        };
+    }
+
+    /// <summary>
+    /// Creates a file transfer request message.
+    /// </summary>
+    /// <param name="request">The file transfer request.</param>
+    /// <returns>A new file request message.</returns>
+    public static Message CreateFileTransferRequest(FileTransferRequest request)
+    {
+        var json = request.Serialize();
+        var body = Encoding.UTF8.GetBytes(json);
+        return new Message
+        {
+            Header = new MessageHeader
+            {
+                Type = MessageType.FileRequest,
+                BodyLength = body.Length
+            },
+            Body = body
+        };
+    }
+
+    /// <summary>
+    /// Creates a file transfer response message.
+    /// </summary>
+    /// <param name="response">The file transfer response.</param>
+    /// <returns>A new file ack message.</returns>
+    public static Message CreateFileTransferResponse(FileTransferResponse response)
+    {
+        var json = response.Serialize();
+        var body = Encoding.UTF8.GetBytes(json);
+        return new Message
+        {
+            Header = new MessageHeader
+            {
+                Type = MessageType.FileAck,
+                BodyLength = body.Length
+            },
+            Body = body
+        };
+    }
+
+    /// <summary>
+    /// Creates a file data chunk message.
+    /// </summary>
+    /// <param name="data">The file data chunk.</param>
+    /// <returns>A new file data message.</returns>
+    public static Message CreateFileData(byte[] data)
+    {
+        return new Message
+        {
+            Header = new MessageHeader
+            {
+                Type = MessageType.FileData,
+                BodyLength = data.Length
+            },
+            Body = data
         };
     }
 

@@ -1,0 +1,28 @@
+@* Chat message bubble component *@
+
+<div class="chat-bubble @(IsOutgoing ? "outgoing" : "incoming")">
+    @if (!IsOutgoing && !string.IsNullOrEmpty(SenderName))
+    {
+        <div class="sender-name">@SenderName</div>
+    }
+    <div class="bubble-content">
+        @Content
+    </div>
+    <div class="bubble-time">
+        @Timestamp.ToString("HH:mm")
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Content { get; set; } = "";
+
+    [Parameter]
+    public DateTime Timestamp { get; set; }
+
+    [Parameter]
+    public bool IsOutgoing { get; set; }
+
+    [Parameter]
+    public string? SenderName { get; set; }
+}

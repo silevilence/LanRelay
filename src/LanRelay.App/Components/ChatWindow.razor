@@ -1,0 +1,121 @@
+@implements IDisposable
+
+<div class="chat-window">
+    @if (SelectedDevice is null)
+    {
+        <div class="no-chat-selected">
+            <div class="empty-icon">💬</div>
+            <p>选择一个设备开始聊天</p>
+        </div>
+    }
+    else
+    {
+        <div class="chat-header">
+            <div class="chat-target-info">
+                <span class="target-icon">@(SelectedDevice.IsDirectConnection ? "💻" : "🔗")</span>
+                <div class="target-details">
+                    <div class="target-name">@SelectedDevice.DeviceName</div>
+                    <div class="target-ip">@SelectedDevice.IPAddress</div>
+                </div>
+            </div>
+            <div class="connection-status @(IsConnected ? "connected" : "disconnected")">
+                @(IsConnected ? "已连接" : "未连接")
+            </div>
+        </div>
+
+        <div class="chat-messages" @ref="messagesContainer">
+            @if (messages.Count == 0)
+            {
+                <div class="no-messages">
+                    <p>暂无消息，发送第一条消息吧！</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var msg in messages)
+                {
+                    <ChatBubble Content="@msg.Content"
+                                Timestamp="@msg.Timestamp"
+                                IsOutgoing="@msg.IsOutgoing"
+                                SenderName="@msg.SenderName" />
+                }
+            }
+        </div>
+
+        <MessageInput OnSend="HandleSendMessage"
+                      IsDisabled="@(!IsConnected)" />
+    }
+</div>
+
+@code {
+    [Inject]
+    private ChatState ChatState { get; set; } = default!;
+
+    [Parameter]
+    public DeviceInfo? SelectedDevice { get; set; }
+
+    [Parameter]
+    public bool IsConnected { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSendMessage { get; set; }
+
+    private IReadOnlyList<ChatMessage> messages = [];
+    private ElementReference messagesContainer;
+
+    protected override void OnInitialized()
+    {
+        ChatState.OnChatHistoryChanged += HandleChatHistoryChanged;
+        RefreshMessages();
+    }
+
+    protected override void OnParametersSet()
+    {
+        RefreshMessages();
+    }
+
+    private void RefreshMessages()
+    {
+        if (SelectedDevice is not null)
+        {
+            messages = ChatState.GetChatHistory(SelectedDevice.DeviceId);
+        }
+        else
+        {
+            messages = [];
+        }
+    }
+
+    private void HandleChatHistoryChanged()
+    {
+        RefreshMessages();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleSendMessage(string text)
+    {
+        if (SelectedDevice is null || string.IsNullOrWhiteSpace(text))
+            return;
+
+        // Add to local state immediately for responsiveness
+        var message = new ChatMessage
+        {
+            Id = Guid.NewGuid(),
+            DeviceId = SelectedDevice.DeviceId,
+            Content = text,
+            Timestamp = DateTime.UtcNow,
+            IsOutgoing = true,
+            SenderName = "我"
+        };
+
+        ChatState.AddMessage(SelectedDevice.DeviceId, message);
+
+        // Notify parent to actually send via TCP
+        await OnSendMessage.InvokeAsync(text);
+    }
+
+    public void Dispose()
+    {
+        ChatState.OnChatHistoryChanged -= HandleChatHistoryChanged;
+    }
+}

@@ -1,0 +1,44 @@
+.chat-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.chat-bubble.outgoing {
+    background: #6366f1;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.incoming {
+    background: #2d2d3f;
+    color: #e0e0e0;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.sender-name {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.bubble-content {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.bubble-time {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: right;
+    margin-top: 4px;
+}
+
+.chat-bubble.incoming .bubble-time {
+    color: #666;
+}

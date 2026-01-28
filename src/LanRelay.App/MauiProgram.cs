@@ -19,6 +19,7 @@ public static class MauiProgram
 
 		// Register State Services (Singleton for State Container Pattern)
 		builder.Services.AddSingleton<DeviceListState>();
+		builder.Services.AddSingleton<ChatState>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();

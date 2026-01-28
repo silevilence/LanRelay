@@ -1,0 +1,44 @@
+@* Message input component with send button *@
+
+<div class="message-input-container">
+    <input type="text"
+           class="message-input"
+           placeholder="输入消息..."
+           @bind="messageText"
+           @bind:event="oninput"
+           @onkeydown="HandleKeyDown"
+           disabled="@IsDisabled" />
+    <button class="send-button"
+            @onclick="SendMessage"
+            disabled="@(IsDisabled || string.IsNullOrWhiteSpace(messageText))">
+        <span class="send-icon">➤</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnSend { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    private string messageText = "";
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(messageText))
+            return;
+
+        var text = messageText.Trim();
+        messageText = "";
+        await OnSend.InvokeAsync(text);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+}

@@ -6,31 +6,38 @@
                     OnDeviceSelected="HandleDeviceSelected" />
     </div>
     <div class="main-content">
-        @if (selectedDevice is not null)
-        {
-            <div class="device-detail">
-                <h2>@selectedDevice.DeviceName</h2>
-                <p>IP: @selectedDevice.IPAddress</p>
-                <p>组: @selectedDevice.GroupId</p>
-                <p>状态: @(selectedDevice.IsDirectConnection ? "直连" : "中转")</p>
-            </div>
-        }
-        else
-        {
-            <div class="no-selection">
-                <p>👈 请从左侧选择一个设备开始通信</p>
-            </div>
-        }
+        <ChatWindow SelectedDevice="@selectedDevice"
+                    IsConnected="@isConnected"
+                    OnSendMessage="HandleSendMessage" />
     </div>
 </div>
 
 @code {
+    [Inject]
+    private ChatState ChatState { get; set; } = default!;
+
     private Guid? selectedDeviceId;
     private DeviceInfo? selectedDevice;
+    private bool isConnected = false;
 
     private void HandleDeviceSelected(DeviceInfo device)
     {
         selectedDeviceId = device.DeviceId;
         selectedDevice = device;
+        ChatState.SelectDevice(device.DeviceId);
+
+        // TODO: Establish TCP connection to the selected device
+        // For now, simulate connection
+        isConnected = true;
+    }
+
+    private async Task HandleSendMessage(string text)
+    {
+        if (selectedDevice is null)
+            return;
+
+        // TODO: Actually send via TcpMessageClient
+        // For now, the message is already added to ChatState in ChatWindow
+        await Task.CompletedTask;
     }
 }
