@@ -17,19 +17,52 @@ You are an expert .NET Architect and Developer assisting in building a Local Are
 ```text
 /
 ├── .github/
-│   └── copilot-instructions.md
-├── src/                  # Source code
-│   ├── LanRelay.Core/    # Class Library
-│   └── LanRelay.App/     # MAUI Blazor Hybrid
-├── tests/                # Unit Tests
+│   ├── copilot-instructions.md
+│   └── prompts/              # Prompt templates for AI assistance
+├── src/
+│   ├── LanRelay.Core/        # Core class library
+│   │   ├── Network/          # Network communication
+│   │   │   ├── NicService.cs           # Multi-NIC management
+│   │   │   ├── UdpBroadcaster.cs       # UDP discovery
+│   │   │   ├── TcpMessageServer.cs     # TCP server
+│   │   │   ├── TcpMessageClient.cs     # TCP client
+│   │   │   ├── TcpClientConnection.cs  # Client connection wrapper
+│   │   │   ├── DiscoveryPacket.cs      # Discovery protocol
+│   │   │   ├── Message.cs              # Message model
+│   │   │   ├── MessageHeader.cs        # Message header
+│   │   │   ├── MessageType.cs          # Message type enum
+│   │   │   └── NicInfo.cs              # NIC info model
+│   │   ├── State/            # State management
+│   │   │   ├── DeviceListState.cs      # Device discovery state
+│   │   │   ├── DeviceInfo.cs           # Device model
+│   │   │   ├── ChatState.cs            # Chat state
+│   │   │   └── ChatMessage.cs          # Chat message model
+│   │   └── FileTransfer/     # File transfer
+│   │       ├── FileTransferService.cs
+│   │       ├── FileTransferRequest.cs
+│   │       └── FileTransferResponse.cs
+│   └── LanRelay.App/         # MAUI Blazor Hybrid App
+│       ├── Components/
+│       │   ├── Pages/        # Routable pages (Home.razor)
+│       │   ├── Layout/       # Layout (MainLayout, NavMenu)
+│       │   ├── DeviceList.razor      # Device list component
+│       │   ├── ChatWindow.razor      # Chat window component
+│       │   ├── ChatBubble.razor      # Chat bubble component
+│       │   └── MessageInput.razor    # Message input component
+│       └── wwwroot/          # Static assets
+├── tests/
 │   ├── LanRelay.Core.Tests/
+│   │   ├── Network/          # Network layer tests
+│   │   ├── State/            # State layer tests
+│   │   └── FileTransfer/     # File transfer tests
 │   └── LanRelay.App.Tests/
-├── tasks/                # Task Management System
-│   ├── plan/             # Backlog
-│   ├── inprocess/        # Active task (MAX 1)
-│   └── completed/        # Finished tasks
-├── LanRelay.slnx         # Solution file
-└── demands.md            # 需求文档
+├── tasks/                    # Task Management System
+│   ├── plan/                 # Backlog (future tasks)
+│   ├── inprocess/            # Active task (MAX 1 at a time)
+│   └── completed/            # Finished tasks
+├── LanRelay.slnx             # Solution file
+├── README.md                 # Project documentation
+└── demands.md                # Requirements specification (需求文档)
 ```
 
 ## 3. CLI First Approach (Mandatory)
@@ -105,11 +138,47 @@ You are an expert .NET Architect and Developer assisting in building a Local Are
 
 ## 7. Coding Guidelines
 
+### Naming Conventions
+*   **State Classes**: `*State.cs` (e.g., `DeviceListState.cs`, `ChatState.cs`)
+*   **Model Classes**: Descriptive names (e.g., `DeviceInfo.cs`, `ChatMessage.cs`)
+*   **Service Classes**: `*Service.cs` (e.g., `NicService.cs`, `FileTransferService.cs`)
+*   **Network Classes**: Descriptive protocol names (e.g., `TcpMessageServer.cs`, `UdpBroadcaster.cs`)
+
 ### UI Layer (Blazor)
 *   Inject State Services (`@inject`).
 *   Subscribe to events in `OnInitialized` and unsubscribe in `Dispose`.
+*   Use `.razor.css` for component-scoped styles.
+
+### State Layer (Core)
+*   State classes must be **singletons** registered in DI.
+*   Use C# `event` for state change notifications.
+*   Expose state via **read-only** properties.
+*   Provide methods for state mutations.
 
 ### Network Layer (Core)
 *   **Dual-NIC Handling**: Logic must account for multiple `NetworkInterface`s.
 *   **Sockets**: Explicitly bind `IPEndPoint` to specific local IPs.
-*   **Async**: Use `async/await` for all I/O.
+*   **Async**: Use `async/await` for all I/O operations.
+*   **Protocol**: Use `MessageHeader` for message framing (type + length prefix).
+
+### File Transfer Layer (Core)
+*   Use chunked transfer with progress reporting.
+*   Support `FileTransferRequest`/`FileTransferResponse` handshake.
+*   Memory-only relay (no disk caching for relay nodes).
+
+## 8. Current Progress
+
+### Completed Tasks (001-006)
+- ✅ Project initialization and solution structure
+- ✅ Multi-NIC scanning and identification (`NicService`)
+- ✅ UDP device discovery and state management (`UdpBroadcaster`, `DeviceListState`)
+- ✅ TCP point-to-point messaging (`TcpMessageServer`, `TcpMessageClient`)
+- ✅ Chat UI implementation (`ChatWindow`, `ChatBubble`, `MessageInput`)
+- ✅ File transfer protocol (`FileTransferService`)
+
+### In Progress (007-011)
+- 🔄 File transfer UI controls
+- 🔄 Relay discovery logic
+- 🔄 Relay data forwarding
+- 🔄 Group management
+- 🔄 Configuration persistence
