@@ -24,7 +24,7 @@
         </div>
 
         <div class="chat-messages" @ref="messagesContainer">
-            @if (messages.Count == 0)
+            @if (messages.Count == 0 && transfers.Count == 0)
             {
                 <div class="no-messages">
                     <p>暂无消息，发送第一条消息吧！</p>
@@ -32,12 +32,27 @@
             }
             else
             {
+                @* Display text messages *@
                 @foreach (var msg in messages)
                 {
                     <ChatBubble Content="@msg.Content"
                                 Timestamp="@msg.Timestamp"
                                 IsOutgoing="@msg.IsOutgoing"
                                 SenderName="@msg.SenderName" />
+                }
+                
+                @* Display file transfer bubbles *@
+                @foreach (var transfer in transfers)
+                {
+                    <FileBubble TransferId="@transfer.TransferId"
+                                FileName="@transfer.FileName"
+                                FileSize="@transfer.FileSize"
+                                IsOutgoing="@transfer.IsOutgoing"
+                                Status="@transfer.Status"
+                                Progress="@transfer.Progress"
+                                Timestamp="@transfer.CreatedAt"
+                                OnAccept="HandleAcceptTransfer"
+                                OnReject="HandleRejectTransfer" />
                 }
             }
         </div>
@@ -51,6 +66,9 @@
     [Inject]
     private ChatState ChatState { get; set; } = default!;
 
+    [Inject]
+    private TransferState TransferState { get; set; } = default!;
+
     [Parameter]
     public DeviceInfo? SelectedDevice { get; set; }
 
@@ -60,18 +78,31 @@
     [Parameter]
     public EventCallback<string> OnSendMessage { get; set; }
 
+    [Parameter]
+    public EventCallback<Guid> OnAcceptTransfer { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnRejectTransfer { get; set; }
+
     private IReadOnlyList<ChatMessage> messages = [];
+    private IReadOnlyList<TransferInfo> transfers = [];
     private ElementReference messagesContainer;
 
     protected override void OnInitialized()
     {
         ChatState.OnChatHistoryChanged += HandleChatHistoryChanged;
+        TransferState.OnTransferAdded += HandleTransferChanged;
+        TransferState.OnTransferProgressChanged += HandleProgressChanged;
+        TransferState.OnTransferStatusChanged += HandleStatusChanged;
+        TransferState.OnTransferRemoved += HandleTransferRemoved;
         RefreshMessages();
+        RefreshTransfers();
     }
 
     protected override void OnParametersSet()
     {
         RefreshMessages();
+        RefreshTransfers();
     }
 
     private void RefreshMessages()
@@ -86,10 +117,57 @@
         }
     }
 
+    private void RefreshTransfers()
+    {
+        if (SelectedDevice is not null)
+        {
+            transfers = TransferState.GetTransfersForDevice(SelectedDevice.DeviceId);
+        }
+        else
+        {
+            transfers = [];
+        }
+    }
+
     private void HandleChatHistoryChanged()
     {
         RefreshMessages();
         InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleTransferChanged(TransferInfo info)
+    {
+        if (info.RemoteDeviceId == SelectedDevice?.DeviceId)
+        {
+            RefreshTransfers();
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void HandleProgressChanged(Guid transferId, double progress)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleStatusChanged(Guid transferId, TransferStatus status)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleTransferRemoved(Guid transferId)
+    {
+        RefreshTransfers();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleAcceptTransfer(Guid transferId)
+    {
+        await OnAcceptTransfer.InvokeAsync(transferId);
+    }
+
+    private async Task HandleRejectTransfer(Guid transferId)
+    {
+        await OnRejectTransfer.InvokeAsync(transferId);
     }
 
     private async Task HandleSendMessage(string text)
@@ -117,5 +195,9 @@
     public void Dispose()
     {
         ChatState.OnChatHistoryChanged -= HandleChatHistoryChanged;
+        TransferState.OnTransferAdded -= HandleTransferChanged;
+        TransferState.OnTransferProgressChanged -= HandleProgressChanged;
+        TransferState.OnTransferStatusChanged -= HandleStatusChanged;
+        TransferState.OnTransferRemoved -= HandleTransferRemoved;
     }
 }

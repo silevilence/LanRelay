@@ -1,0 +1,145 @@
+.file-bubble {
+    max-width: 280px;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+    position: relative;
+}
+
+.file-bubble.outgoing {
+    background: #4f46e5;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.file-bubble.incoming {
+    background: #2d2d3f;
+    color: #e0e0e0;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.file-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.file-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.file-actions button {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.file-actions button:hover {
+    transform: scale(1.05);
+}
+
+.file-actions button:active {
+    transform: scale(0.95);
+}
+
+.btn-accept {
+    background: #22c55e;
+    color: white;
+}
+
+.btn-accept:hover {
+    background: #16a34a;
+}
+
+.btn-reject {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-reject:hover {
+    background: #dc2626;
+}
+
+.file-status {
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+.file-status.completed {
+    color: #4ade80;
+}
+
+.file-status.cancelled,
+.file-status.rejected {
+    color: #fbbf24;
+}
+
+.file-status.failed {
+    color: #f87171;
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.file-bubble.incoming .progress-container {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #22d3ee, #6366f1);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.7rem;
+    text-align: right;
+    opacity: 0.8;
+}
+
+.bubble-time {
+    width: 100%;
+    font-size: 0.65rem;
+    text-align: right;
+    opacity: 0.6;
+    margin-top: 4px;
+}

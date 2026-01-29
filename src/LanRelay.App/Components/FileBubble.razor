@@ -1,0 +1,128 @@
+@* File transfer bubble component for displaying file messages in chat *@
+@implements IDisposable
+
+<div class="file-bubble @(IsOutgoing ? "outgoing" : "incoming")">
+    <div class="file-icon">
+        @GetFileIcon()
+    </div>
+    <div class="file-info">
+        <div class="file-name" title="@FileName">@FileName</div>
+        <div class="file-size">@FormatFileSize(FileSize)</div>
+        
+        @switch (Status)
+        {
+            case TransferStatus.Pending when !IsOutgoing:
+                <div class="file-actions">
+                    <button class="btn-accept" @onclick="HandleAccept" title="接收">✓</button>
+                    <button class="btn-reject" @onclick="HandleReject" title="拒绝">✗</button>
+                </div>
+                break;
+                
+            case TransferStatus.Pending when IsOutgoing:
+                <div class="file-status">等待对方接收...</div>
+                break;
+                
+            case TransferStatus.InProgress:
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: @(Progress * 100)%"></div>
+                </div>
+                <div class="progress-text">@((Progress * 100).ToString("F0"))%</div>
+                break;
+                
+            case TransferStatus.Completed:
+                <div class="file-status completed">✓ 传输完成</div>
+                break;
+                
+            case TransferStatus.Cancelled:
+                <div class="file-status cancelled">已取消</div>
+                break;
+                
+            case TransferStatus.Rejected:
+                <div class="file-status rejected">已拒绝</div>
+                break;
+                
+            case TransferStatus.Failed:
+                <div class="file-status failed">传输失败</div>
+                break;
+        }
+    </div>
+    <div class="bubble-time">
+        @Timestamp.ToString("HH:mm")
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TransferId { get; set; }
+
+    [Parameter, EditorRequired]
+    public string FileName { get; set; } = "";
+
+    [Parameter, EditorRequired]
+    public long FileSize { get; set; }
+
+    [Parameter]
+    public bool IsOutgoing { get; set; }
+
+    [Parameter]
+    public TransferStatus Status { get; set; }
+
+    [Parameter]
+    public double Progress { get; set; }
+
+    [Parameter]
+    public DateTime Timestamp { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnAccept { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnReject { get; set; }
+
+    private string GetFileIcon()
+    {
+        var ext = Path.GetExtension(FileName).ToLowerInvariant();
+        return ext switch
+        {
+            ".pdf" => "📄",
+            ".doc" or ".docx" => "📝",
+            ".xls" or ".xlsx" => "📊",
+            ".ppt" or ".pptx" => "📽️",
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" => "🖼️",
+            ".mp3" or ".wav" or ".flac" => "🎵",
+            ".mp4" or ".avi" or ".mkv" or ".mov" => "🎬",
+            ".zip" or ".rar" or ".7z" or ".tar" or ".gz" => "📦",
+            ".exe" or ".msi" => "⚙️",
+            ".txt" => "📃",
+            _ => "📁"
+        };
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        string[] sizes = ["B", "KB", "MB", "GB", "TB"];
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private async Task HandleAccept()
+    {
+        await OnAccept.InvokeAsync(TransferId);
+    }
+
+    private async Task HandleReject()
+    {
+        await OnReject.InvokeAsync(TransferId);
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+}
