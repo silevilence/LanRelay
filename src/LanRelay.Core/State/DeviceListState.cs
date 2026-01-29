@@ -79,6 +79,7 @@ public class DeviceListState
 
     /// <summary>
     /// Processes a discovery packet and updates the device list.
+    /// Handles both direct devices and relayed devices (via Gossip protocol).
     /// </summary>
     /// <param name="packet">The received discovery packet.</param>
     /// <param name="senderIp">The IP address of the sender.</param>
@@ -87,7 +88,8 @@ public class DeviceListState
         ArgumentNullException.ThrowIfNull(packet);
         ArgumentNullException.ThrowIfNull(senderIp);
 
-        var deviceInfo = new DeviceInfo
+        // 1. Process the sender as a direct connection
+        var senderInfo = new DeviceInfo
         {
             DeviceId = packet.DeviceId,
             DeviceName = packet.DeviceName,
@@ -95,10 +97,51 @@ public class DeviceListState
             GroupId = packet.GroupId,
             LastSeen = DateTime.UtcNow,
             IsDirectConnection = true,
-            RelayDeviceId = null
+            RelayDeviceId = null,
+            HopCount = 0
         };
 
-        AddOrUpdateDevice(deviceInfo);
+        AddOrUpdateDevice(senderInfo);
+
+        // 2. Process known devices advertised by the sender (Gossip protocol)
+        foreach (var known in packet.KnownDevices)
+        {
+            ProcessKnownDevice(known, packet.DeviceId, senderIp);
+        }
+    }
+
+    /// <summary>
+    /// Processes a known device advertised via Gossip protocol.
+    /// </summary>
+    private void ProcessKnownDevice(KnownDeviceInfo known, Guid relayDeviceId, IPAddress relayIp)
+    {
+        // Calculate hop count: advertised hops + 1 (for the relay itself)
+        var hopCount = known.HopCount + 1;
+
+        // Check if we already know this device
+        if (_devices.TryGetValue(known.DeviceId, out var existing))
+        {
+            // Prefer direct connection or lower hop count
+            if (existing.IsDirectConnection || existing.HopCount <= hopCount)
+            {
+                return; // Keep existing better route
+            }
+        }
+
+        // Add/update the relayed device
+        var relayedDevice = new DeviceInfo
+        {
+            DeviceId = known.DeviceId,
+            DeviceName = known.DeviceName,
+            IPAddress = relayIp, // Use relay's IP for communication
+            GroupId = known.GroupId ?? "default",
+            LastSeen = DateTime.UtcNow,
+            IsDirectConnection = false,
+            RelayDeviceId = relayDeviceId,
+            HopCount = hopCount
+        };
+
+        AddOrUpdateDevice(relayedDevice);
     }
 
     /// <summary>

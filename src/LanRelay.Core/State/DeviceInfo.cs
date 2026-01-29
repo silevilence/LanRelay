@@ -41,4 +41,10 @@ public record DeviceInfo
     /// If relayed, the relay device ID. Null if direct connection.
     /// </summary>
     public Guid? RelayDeviceId { get; init; }
+
+    /// <summary>
+    /// Number of network hops to reach this device.
+    /// Direct connection = 0, via one relay = 1, etc.
+    /// </summary>
+    public int HopCount { get; init; } = 0;
 }

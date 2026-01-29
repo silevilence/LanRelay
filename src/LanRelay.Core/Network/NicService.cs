@@ -70,4 +70,50 @@ public class NicService
 
         return result;
     }
+
+    /// <summary>
+    /// Alias for GetActiveNicInfos for convenience.
+    /// </summary>
+    public IReadOnlyList<NicInfo> GetActiveNics() => GetActiveNicInfos();
+
+    /// <summary>
+    /// Determines if this machine is a potential bridge node
+    /// (has NICs on multiple different subnets).
+    /// </summary>
+    /// <returns>True if the machine has 2+ NICs on different subnets.</returns>
+    public bool IsBridgeNode()
+    {
+        var nics = GetActiveNicInfos();
+        if (nics.Count < 2)
+        {
+            return false;
+        }
+
+        // Check if any two NICs are on different subnets
+        var subnets = new HashSet<string>();
+        foreach (var nic in nics)
+        {
+            var subnet = GetSubnetAddress(nic.IPAddress, nic.SubnetMask);
+            subnets.Add(subnet);
+        }
+
+        return subnets.Count >= 2;
+    }
+
+    /// <summary>
+    /// Gets the subnet address for an IP and mask.
+    /// </summary>
+    private static string GetSubnetAddress(IPAddress ip, IPAddress mask)
+    {
+        var ipBytes = ip.GetAddressBytes();
+        var maskBytes = mask.GetAddressBytes();
+        var subnetBytes = new byte[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            subnetBytes[i] = (byte)(ipBytes[i] & maskBytes[i]);
+        }
+
+        return new IPAddress(subnetBytes).ToString();
+    }
 }

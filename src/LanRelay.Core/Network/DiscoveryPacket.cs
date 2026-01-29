@@ -40,6 +40,13 @@ public record DiscoveryPacket
     public required string GroupId { get; init; }
 
     /// <summary>
+    /// List of known devices to share via Gossip protocol for relay discovery.
+    /// Bridge nodes use this to advertise devices from other network segments.
+    /// </summary>
+    [JsonPropertyName("known")]
+    public IReadOnlyList<KnownDeviceInfo> KnownDevices { get; init; } = [];
+
+    /// <summary>
     /// Serializes the packet to a JSON string.
     /// </summary>
     public string Serialize()
