@@ -19,6 +19,7 @@ public class GroupStateTests
         // Assert
         Assert.NotNull(group);
         Assert.Equal("MyTeam", group.GroupId);
+        Assert.NotNull(group.PasswordHash);
         Assert.NotEmpty(group.PasswordHash);
         Assert.NotEqual("secret123", group.PasswordHash); // Should be hashed
     }

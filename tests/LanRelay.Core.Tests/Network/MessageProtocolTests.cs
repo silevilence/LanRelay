@@ -48,7 +48,8 @@ public class MessageProtocolTests
         var restored = MessageHeader.FromBytes(bytes);
 
         // Assert
-        Assert.Equal(original.Type, restored.Type);
+        Assert.NotNull(restored);
+        Assert.Equal(original.Type, restored!.Type);
         Assert.Equal(original.BodyLength, restored.BodyLength);
     }
 
