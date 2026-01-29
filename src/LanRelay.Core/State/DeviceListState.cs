@@ -43,6 +43,19 @@ public class DeviceListState
     public IReadOnlyList<DeviceInfo> Devices => _devices.Values.ToList().AsReadOnly();
 
     /// <summary>
+    /// Gets devices filtered by group ID.
+    /// </summary>
+    /// <param name="groupId">The group ID to filter by.</param>
+    /// <returns>A list of devices belonging to the specified group.</returns>
+    public IReadOnlyList<DeviceInfo> GetDevicesByGroup(string groupId)
+    {
+        return _devices.Values
+            .Where(d => string.Equals(d.GroupId, groupId, StringComparison.Ordinal))
+            .ToList()
+            .AsReadOnly();
+    }
+
+    /// <summary>
     /// Adds a new device or updates an existing one.
     /// </summary>
     /// <param name="deviceInfo">The device information to add or update.</param>
